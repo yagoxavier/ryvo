@@ -1,0 +1,34 @@
+/* Paleta RYVO — cores de docs/identidade.md e do front atual. */
+:root {
+  /* Night Core — fundo principal. */
+  --night-core: #0F1220;
+
+  /* Deep Slate — cards, painéis e superfícies. */
+  --deep-slate: #1A2033;
+
+  /* Portal Purple — marca e ações principais. */
+  --portal-purple: #7C5CFF;
+
+  /* Pulse Cyan — acentos, presença e conexão. */
+  --pulse-cyan: #47D7E8;
+
+  /* Soft White — texto principal e logo branco. */
+  --soft-white: #F4F7FF;
+
+  /* Mist Gray — texto secundário e assinatura. */
+  --mist-gray: #A9B3C9;
+
+  /* Vermelho funcional — sair da chamada e estados de erro. */
+  --desligar: #E5484D;
+
+  /* Cores de avatar — medidas no mockup proposta-03 (mediana de 6 pixels por avatar); índice = corAvatar(nome) em src/puro.js. */
+  --avatar-1: #7C5CFF;
+  --avatar-2: #DC46B3;
+  --avatar-3: #4E8AFB;
+  --avatar-4: #31CE8C;
+  --avatar-5: #FD893A;
+  --avatar-6: #28CBC9;
+  --avatar-7: #F8BE38;
+  --avatar-8: #A588FA;
+  --avatar-9: #FB6274;
+}

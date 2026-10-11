@@ -1,0 +1,33 @@
+{
+  "reference": "docs/identidade/proposta-03-portal-cards-direita.png",
+  "palette": "docs/identidade.md",
+  "logo": {
+    "svg": "assets/identidade/ryvo-logo.svg",
+    "png": "assets/identidade/ryvo-logo.png",
+    "white": "assets/identidade/ryvo-logo-white.svg",
+    "tagline": "assets/identidade/ryvo-logo-tagline.svg",
+    "taglinePng": "assets/identidade/ryvo-logo-tagline.png"
+  },
+  "symbol": {
+    "svg": "assets/identidade/ryvo-symbol.svg",
+    "png": "assets/identidade/ryvo-symbol.png",
+    "white": "assets/identidade/ryvo-symbol-white.svg"
+  },
+  "wordmark": "assets/identidade/ryvo-wordmark.svg",
+  "app": {
+    "svg": "assets/identidade/ryvo-app-icon.svg",
+    "png1024": "assets/identidade/ryvo-app-icon.png",
+    "appleTouch180": "assets/identidade/apple-touch-icon.png",
+    "png192": "assets/identidade/icon-192.png",
+    "png512": "assets/identidade/icon-512.png",
+    "maskable512": "assets/identidade/icon-maskable-512.png"
+  },
+  "favicon": {
+    "svg": "assets/identidade/favicon.svg",
+    "ico": "assets/identidade/favicon.ico",
+    "png16": "assets/identidade/favicon-16.png",
+    "png32": "assets/identidade/favicon-32.png",
+    "png48": "assets/identidade/favicon-48.png",
+    "png256": "assets/identidade/favicon-256.png"
+  }
+}

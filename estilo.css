@@ -1,0 +1,148 @@
+@font-face { font-family: 'Figtree'; font-weight: 400 700; font-display: swap; src: url(fontes/figtree.woff2) format('woff2'); }
+
+/* As cores vêm de assets/identidade/paleta.css (linkada antes deste arquivo). Nenhuma cor em hex aqui. */
+:root {
+  --fonte: Figtree, system-ui, sans-serif;
+  --borda: color-mix(in srgb, var(--mist-gray) 22%, transparent);
+  --brilho: color-mix(in srgb, var(--portal-purple) 40%, transparent);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; min-height: 100vh; color: var(--soft-white); font: 16px/1.5 var(--fonte);
+  background-color: var(--night-core);
+  background-image: radial-gradient(ellipse at 15% -10%, color-mix(in srgb, var(--portal-purple) 24%, transparent), transparent 55%), radial-gradient(ellipse at 100% 110%, color-mix(in srgb, var(--pulse-cyan) 12%, transparent), transparent 50%);
+  background-attachment: fixed;
+}
+button, select { font: inherit; cursor: pointer; border: 1px solid var(--borda); border-radius: 12px; padding: 12px 18px; background: var(--deep-slate); color: var(--soft-white); }
+button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--pulse-cyan); outline-offset: 3px; }
+.primario { background: var(--portal-purple); border-color: transparent; font-weight: 700; }
+.largo { width: 100%; }
+.desligar { background: var(--desligar); border-color: transparent; font-weight: 700; }
+.sub, .nota { margin: 0; color: var(--mist-gray); }
+.ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.logo { display: block; }
+.logo img { display: block; width: auto; max-width: 100%; }
+.campo { display: grid; gap: 6px; width: 100%; text-align: left; color: var(--mist-gray); font-size: 14px; }
+input { width: 100%; padding: 12px 16px; background: var(--night-core); border: 1px solid var(--borda); border-radius: 12px; color: var(--soft-white); font: inherit; }
+input:focus { border-color: var(--pulse-cyan); }
+.chip { padding: 4px 10px; border-radius: 8px; background: var(--night-core); color: var(--mist-gray); font-size: 14px; word-break: break-all; }
+.mascote { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: var(--night-core); border: 1px solid var(--brilho); color: var(--pulse-cyan); font-size: 32px; font-weight: 700; }
+.mascote.erro { color: var(--desligar); }
+.titulo-sala { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.passos { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; text-align: left; }
+.passos li { color: var(--mist-gray); opacity: .5; }
+.passos li.ativo { opacity: 1; color: var(--soft-white); }
+.passos li.feito { opacity: 1; color: var(--pulse-cyan); }
+.passos small { display: block; color: var(--mist-gray); }
+
+/* Pré-chamada: marca empilhada e cartão central dentro de um portal, centralizados na tela (D11). */
+main { width: min(440px, 100% - 32px); min-height: 100vh; min-height: 100dvh; margin: 0 auto; padding: 40px 0; display: grid; gap: 64px; align-content: center; justify-items: center; text-align: center; }
+body:has(#chamada:not([hidden])) > main { display: none; }
+.marca { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 400; }
+.marca .sub { font-size: 15px; }
+main > section, main > form { position: relative; display: grid; gap: 14px; justify-items: center; width: 100%; padding: 28px 24px; background: var(--deep-slate); border: 1px solid var(--brilho); border-radius: 20px; box-shadow: 0 0 48px color-mix(in srgb, var(--portal-purple) 20%, transparent); }
+
+/* Portal atrás do cartão: arco roxo com brilho ciano que some para baixo e respira devagar. */
+main > section::before, main > form::before { content: ''; position: absolute; z-index: -1; inset: -40px -32px 30%; border: 1.5px solid var(--portal-purple); border-bottom: 0; border-radius: 50% 50% 0 0 / 200px 200px 0 0; box-shadow: 0 -10px 44px color-mix(in srgb, var(--pulse-cyan) 22%, transparent), inset 0 10px 44px color-mix(in srgb, var(--portal-purple) 22%, transparent); mask-image: linear-gradient(black 25%, transparent); pointer-events: none; animation: respira 6s ease-in-out infinite alternate; }
+@keyframes respira { from { opacity: .5; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { main > section::before, main > form::before { animation: none; opacity: .8; } }
+main p, main h2 { text-wrap: balance; }
+.ou { display: flex; align-items: center; gap: 12px; width: 100%; margin: 6px 0; color: var(--mist-gray); font-size: 13px; }
+.ou::before, .ou::after { content: ''; flex: 1; border-top: 1px solid var(--borda); }
+input::placeholder { color: var(--mist-gray); opacity: .6; }
+@media (max-width: 480px) {
+  main { gap: 52px; }
+  main > section::before, main > form::before { inset: -28px -10px 30%; border-radius: 50% 50% 0 0 / 150px 150px 0 0; }
+}
+
+/* Chamada: áreas de grid (D1). */
+#chamada { display: grid; grid-template-columns: minmax(0, 1fr) 300px 340px; grid-template-rows: auto 1fr auto; grid-template-areas: "topo topo topo" "cena cena lateral" "rodape convite convite"; gap: 16px; width: min(1480px, 100% - 32px); margin: 0 auto; padding: 16px 0 24px; text-align: left; }
+.topo { grid-area: topo; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.titulo { display: flex; align-items: center; gap: 12px; min-width: 0; margin-inline: auto; }
+.titulo h2 { margin: 0; font-size: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#status { display: flex; align-items: center; gap: 8px; color: var(--mist-gray); font-size: 14px; white-space: nowrap; }
+#status::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--pulse-cyan); box-shadow: 0 0 8px var(--pulse-cyan); }
+.cena { grid-area: cena; display: flex; flex-direction: column; gap: 12px; }
+#palco { flex: 1; grid-template-rows: auto 1fr; }
+.cab-palco { display: flex; align-items: center; gap: 10px; }
+#faixa { margin: 0; font-weight: 700; }
+video { display: block; width: 100%; min-height: 0; align-self: stretch; object-fit: contain; border-radius: 12px; background: var(--night-core); }
+.vazio { display: none; flex: 1; place-items: center; align-content: center; gap: 8px; min-height: 320px; background: var(--deep-slate); border: 1px dashed var(--borda); border-radius: 16px; color: var(--mist-gray); }
+.vazio p { margin: 0; }
+#palco[hidden] ~ .vazio { display: grid; }
+.rodape { grid-area: rodape; justify-items: center; align-content: center; }
+.barra { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+button[aria-pressed=true] { background: var(--desligar); }
+#aviso, #custo { margin: 0; color: var(--mist-gray); font-size: 14px; text-align: center; }
+
+/* Lateral: participantes, sala de espera, convite. */
+.lateral { grid-area: lateral; display: flex; flex-direction: column; gap: 14px; align-self: stretch; }
+.painel { display: grid; gap: 10px; padding: 14px; background: var(--deep-slate); border: 1px solid var(--borda); border-radius: 16px; }
+/* Convite na linha da barra, link e código lado a lado; sem convite (convidado), a lateral desce até o fim. */
+#convite { grid-area: convite; grid-template-columns: auto minmax(0, 2fr) minmax(0, 1fr); align-items: end; column-gap: 16px; }
+#convite h3 { align-self: center; }
+@media (min-width: 901px) { #chamada:has(> #convite[hidden]) { grid-template-areas: "topo topo topo" "cena cena lateral" "rodape rodape lateral"; } }
+.cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.cab h3, #convite h3 { margin: 0; font-size: 18px; }
+.cab span { color: var(--mist-gray); font-size: 14px; }
+#espera .cab { justify-content: flex-start; }
+#fila-n { min-width: 26px; padding: 0 9px; border-radius: 999px; background: var(--night-core); border: 1px solid var(--borda); color: var(--soft-white); text-align: center; }
+#membros, #fila { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+#membros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#membros li { display: grid; grid-template-columns: minmax(0, auto) auto; justify-content: center; align-items: center; justify-items: center; row-gap: 4px; padding: 10px 6px; background: var(--night-core); border: 1px solid var(--borda); border-radius: 12px; }
+#membros .avatar { grid-column: 1 / -1; }
+#membros .nome { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.voce { margin-left: 6px; padding: 0 8px; border-radius: 999px; background: color-mix(in srgb, var(--portal-purple) 32%, transparent); font-size: 12px; }
+.avatar { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--soft-white); font-size: 20px; font-weight: 700; }
+.avatar.c1 { background: var(--avatar-1); }
+.avatar.c2 { background: var(--avatar-2); }
+.avatar.c3 { background: var(--avatar-3); }
+.avatar.c4 { background: var(--avatar-4); }
+.avatar.c5 { background: var(--avatar-5); }
+.avatar.c6 { background: var(--avatar-6); }
+.avatar.c7 { background: var(--avatar-7); }
+.avatar.c8 { background: var(--avatar-8); }
+.avatar.c9 { background: var(--avatar-9); }
+li.anf .avatar::after { content: '\265B'; position: absolute; top: -10px; right: -8px; font-size: 18px; color: var(--avatar-7); }
+#fila li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 10px; align-items: center; padding: 10px; background: var(--night-core); border: 1px solid var(--borda); border-radius: 12px; }
+#fila .avatar { width: 36px; height: 36px; font-size: 16px; }
+.quem { display: contents; }
+#fila .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dica { grid-column: 1 / -1; color: var(--mist-gray); font-size: 12px; }
+.acoes { grid-area: 1 / 3; display: flex; gap: 6px; }
+.acoes button { padding: 6px 10px; font-size: 14px; }
+.campo-copia { display: grid; gap: 4px; }
+.rotulo { color: var(--mist-gray); font-size: 13px; }
+.linha-copia { display: flex; gap: 8px; align-items: stretch; }
+.linha-copia input { flex: 1; min-width: 0; padding: 10px 12px; }
+#codigo { flex: 1; min-width: 0; padding: 10px 12px; background: var(--night-core); border: 1px solid var(--borda); border-radius: 12px; color: var(--pulse-cyan); letter-spacing: .25em; }
+#copiar-codigo.ok { color: var(--pulse-cyan); }
+#convite-nota { grid-column: 1 / -1; font-size: 14px; }
+#salas { display: grid; gap: 8px; width: 100%; text-align: left; }
+#salas h3 { margin: 0; font-size: 18px; }
+#salas-lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+#salas-lista li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px; background: var(--night-core); border: 1px solid var(--borda); border-radius: 12px; }
+#salas-lista a { color: var(--soft-white); text-decoration: none; overflow-wrap: anywhere; }
+#salas-lista a:hover { color: var(--pulse-cyan); }
+#salas-lista button { padding: 6px 10px; font-size: 14px; }
+#salas .avatar { width: 36px; height: 36px; font-size: 16px; }
+
+@media (max-width: 900px) {
+  #chamada { grid-template-columns: minmax(0, 1fr); grid-template-areas: "topo" "cena" "rodape" "lateral" "convite"; }
+  #convite { grid-template-columns: minmax(0, 1fr); }
+  .topo { flex-wrap: wrap; justify-content: center; }
+  .titulo { margin-inline: 0; flex-wrap: wrap; justify-content: center; text-align: center; }
+  .titulo h2 { white-space: normal; overflow-wrap: anywhere; }
+  #status { flex-basis: 100%; justify-content: center; white-space: normal; }
+  .acoes button { padding: 8px 12px; }
+  .barra > * { flex: 1 1 140px; }
+  .vazio { min-height: 180px; }
+}
+@media (max-width: 480px) {
+  #fila li { grid-template-columns: auto minmax(0, 1fr); }
+  .acoes { grid-area: auto / 1 / auto / -1; }
+  .acoes button { flex: 1; }
+}
