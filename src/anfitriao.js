@@ -1,5 +1,5 @@
 // Anfitrião: dono do certificado persistente, porteiro (código + sala de espera) e hub de voz.
-import { MSG, Sala, valida, fpUnico, montaMembro, novoPin, dataBr, idFixo, mistura, CacheMembros, ENTRAR_MS } from './puro.js';
+import { MSG, TITULO, Sala, valida, fpUnico, montaMembro, novoPin, dataBr, idFixo, mistura, CacheMembros, ENTRAR_MS } from './puro.js';
 import { preparaCert, consultaAllow, opcoesPeer, tokenSessao } from './identidade.js';
 import { Voz, tocar } from './voz.js';
 import { Tela } from './tela.js';
@@ -11,7 +11,7 @@ export const abreSala = async ({ nome, mic, ui }) => {
   ui.mostra('verifica');
   const id = await preparaCert();
   if (id.expirado) {
-    ui.erro({ msg: MSG.expirou(dataBr(id.expirado.em)), id: id.expirado.fp, nota: MSG.expirouNota, copiar: true, pedir: true });
+    ui.erro({ titulo: TITULO.expirou, msg: MSG.expirou(dataBr(id.expirado.em)), id: id.expirado.fp, nota: MSG.expirouNota, copiar: true, pedir: true });
     return null;
   }
   const { cert, fp } = id;
@@ -32,13 +32,13 @@ export const abreSala = async ({ nome, mic, ui }) => {
   if (typeof meu !== 'string') {
     peer.destroy();
     solta();
-    ui.erro({ msg: MSG.erroRede(meu?.type ?? 'desconhecido') });
+    ui.erro({ titulo: TITULO.semConexao, msg: MSG.erroRede(meu?.type ?? 'desconhecido') });
     return null;
   }
   if ((await consulta) !== 'sim') {
     peer.destroy();
     solta();
-    ui.erro({ msg: MSG.semPermissao, id: fp, copiar: true, pedir: true });
+    ui.erro({ titulo: TITULO.semPermissao, msg: MSG.semPermissao, id: fp, copiar: true, pedir: true });
     return null;
   }
 

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://unpkg.com; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://0.peerjs.com wss://0.peerjs.com https://script.google.com https://script.googleusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#0F1220">
 <title>RYVO</title>
@@ -19,11 +19,16 @@
 </h1>
 
 <section id="inicio">
+  <h2 class="bloco-t">Abrir uma sala</h2>
+  <p class="nota">Só anfitriões autorizados abrem salas.</p>
   <label class="campo">Seu nome<input id="nome" maxlength="24" autocomplete="off"></label>
   <button id="abrir" class="primario largo">Abrir sala</button>
   <p class="ou" aria-hidden="true">ou</p>
+  <h2 class="bloco-t">Entrar com um link</h2>
+  <p class="nota">O link vem de quem abriu a sala.</p>
   <label class="campo">Link de uma sala<input id="colar" autocomplete="off" placeholder="Cole aqui o link que você recebeu"></label>
-  <button id="ir" class="largo">Entrar com o link</button>
+  <p id="colar-erro" class="erro-campo" role="alert" hidden></p>
+  <button id="ir" class="largo">Continuar com o link</button>
   <div id="salas" hidden>
     <h3>Salas do grupo</h3>
     <ul id="salas-lista"></ul>
@@ -33,13 +38,14 @@
 </section>
 
 <section id="verifica" hidden>
-  <div class="mascote" aria-hidden="true">?</div>
-  <h2>Verificando permissão…</h2>
+  <div class="mascote carregando" aria-hidden="true"></div>
+  <h2 id="verifica-t" tabindex="-1">Verificando permissão…</h2>
   <p class="nota">Isso pode levar alguns segundos.</p>
 </section>
 
 <section id="erro" hidden>
   <div class="mascote erro" aria-hidden="true">!</div>
+  <h2 id="erro-titulo" tabindex="-1"></h2>
   <p id="erro-msg" role="alert"></p>
   <code id="erro-id" class="chip" hidden></code>
   <p id="erro-nota" class="nota" hidden></p>
@@ -53,18 +59,21 @@
   <h2 class="titulo-sala"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7A5 5 0 0 1 17 7v4"/></svg> Entrar na sala</h2>
   <p id="g-dica" class="nota" role="status" hidden></p>
   <label class="campo">Seu nome<input id="g-nome" maxlength="24" required autocomplete="off"></label>
-  <label class="campo">Código da sala<input id="g-codigo" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="6 números" required autocomplete="off"></label>
+  <label class="campo">Código da sala<input id="g-codigo" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="6 números" required autocomplete="off" aria-describedby="g-ajuda"></label>
+  <p id="g-ajuda" class="nota">O código tem 6 números. Peça a quem abriu a sala.</p>
   <button id="g-entrar" class="primario largo">Entrar na sala →</button>
+  <button type="button" id="g-voltar" class="largo">Voltar</button>
 </form>
 
 <section id="progresso" hidden>
-  <div class="mascote" aria-hidden="true">?</div>
-  <ol class="passos">
+  <div class="mascote carregando" aria-hidden="true"></div>
+  <h2 id="progresso-t" tabindex="-1">Entrando na sala</h2>
+  <ol class="passos" aria-live="polite">
     <li id="p1">Conferindo se o anfitrião é autorizado…<small id="p1-extra" hidden>Isso pode levar alguns segundos</small></li>
     <li id="p2">Conectando…</li>
     <li id="p3">Aguardando o anfitrião aceitar</li>
   </ol>
-  <button id="g-sair">Sair</button>
+  <button id="g-sair">Cancelar entrada</button>
 </section>
 </main>
 
@@ -76,11 +85,12 @@
     </div>
     <div class="titulo">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7A5 5 0 0 1 17 7v4"/></svg>
-      <h2 id="sala-nome">Sala</h2>
+      <h2 id="sala-nome" tabindex="-1">Sala</h2>
       <span id="status"></span>
     </div>
   </header>
 
+  <div class="corpo">
   <div class="cena">
     <div id="palco" class="painel" hidden>
       <div class="cab-palco">
@@ -89,40 +99,39 @@
       </div>
       <video id="video" autoplay playsinline></video>
     </div>
-    <div class="vazio">
-      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-      <p>Ninguém está compartilhando</p>
-    </div>
+    <section class="cards">
+      <div class="cab"><h3>Participantes</h3><span id="contagem"></span></div>
+      <ul id="membros"></ul>
+    </section>
   </div>
 
-  <div class="rodape painel">
-    <p id="aviso" role="status" hidden></p>
+  <div id="espera" class="painel" hidden>
+    <div class="cab"><h3><button type="button" id="espera-alterna" class="alterna" aria-expanded="true" aria-controls="fila-corpo">Sala de espera <span id="fila-n"></span></button></h3></div>
+    <div id="fila-corpo"><ul id="fila"></ul></div>
+  </div>
+  </div>
+
+  <footer id="dock" class="dock">
+  <div class="rodape">
     <div class="barra">
-      <button id="mic" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg>Microfone</button>
+      <button id="mic"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg><span id="mic-t">Silenciar microfone</span></button>
       <select id="preset" aria-label="Qualidade da tela">
-        <option value="leve">Leve (720p)</option>
-        <option value="detalhe" selected>Nítido (1080p)</option>
+        <option value="leve">Leve (720p 30)</option>
+        <option value="detalhe" selected>Nítido (1080p 30)</option>
         <option value="movimento">Fluido (1080p 60)</option>
       </select>
       <button id="tela"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span id="tela-t">Compartilhar tela</span></button>
       <button id="desligar" class="desligar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button>
     </div>
-    <p id="custo" hidden></p>
+    <div class="info">
+      <p id="aviso" role="status" hidden></p>
+      <p id="custo" hidden></p>
+    </div>
   </div>
 
-  <aside class="lateral">
-    <div class="painel">
-      <div class="cab"><h3>Participantes</h3><span id="contagem"></span></div>
-      <ul id="membros"></ul>
-    </div>
-    <div id="espera" class="painel" hidden>
-      <div class="cab"><h3>Sala de espera</h3><span id="fila-n"></span></div>
-      <ul id="fila"></ul>
-    </div>
-  </aside>
-
-  <div id="convite" class="painel" hidden>
-    <h3>Convite</h3>
+  <div id="convite" hidden>
+    <h3><button type="button" id="convite-alterna" class="alterna" aria-expanded="true" aria-controls="convite-corpo">Convite</button></h3>
+    <div id="convite-corpo">
     <div class="campo-copia">
       <span class="rotulo">Link da sala</span>
       <div class="linha-copia">
@@ -138,8 +147,15 @@
       </div>
     </div>
     <p id="convite-nota" class="nota"></p>
+    </div>
   </div>
+  </footer>
 </section>
+
+<template id="selos">
+  <span class="selo-volume" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>
+  <span class="selo-mudo" role="img" aria-label="Microfone silenciado" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 1l22 22"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><path d="M12 19v4"/></svg></span>
+</template>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" integrity="sha384-nlUQ8ZqCbvStErob+biJNzSgltf6urV3VGqhfIfzhmg9RXmpeRm76ELw0pYnKlTR" crossorigin="anonymous"></script>
 <script type="module" src="src/app.js"></script>

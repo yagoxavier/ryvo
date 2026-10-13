@@ -57,10 +57,6 @@ export const certDoConvidado = async () => {
 export const salasConhecidas = () => { try { return lerSalas(localStorage.getItem('ryvo.salas')); } catch { return []; } };
 export const gravaSalas = lista => { try { localStorage.setItem('ryvo.salas', JSON.stringify(lista)); } catch {} };
 
-// Ponto de contato com o administrador pelo WhatsApp: só dígitos, com DDI. DECISÃO DO USUÁRIO: este número é inválido de propósito;
-// trocar pelo real antes de publicar (fora da automação).
-export const ADMIN_WA = '5500000000000';
-
 // Há certificado persistente neste aparelho? NÃO cria o banco: indexedDB.open cria um banco vazio se ele não existe,
 // e o visitante nunca pode deixar rastro (D11, S01 R4neg3). Por isso olha indexedDB.databases() antes de abrir.
 export const temCert = async () => {

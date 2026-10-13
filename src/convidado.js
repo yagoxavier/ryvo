@@ -1,5 +1,5 @@
 // Convidado: confere o anfitrião (allowlist + certificado do link) ANTES de mandar nome e código.
-import { MSG, valida, confere, guardaSala } from './puro.js';
+import { MSG, TITULO, valida, confere, guardaSala } from './puro.js';
 import { consultaAllow, certDoConvidado, opcoesPeer, salasConhecidas, gravaSalas } from './identidade.js';
 import { Voz, tocar } from './voz.js';
 import { Tela } from './tela.js';
@@ -36,13 +36,13 @@ export const entra = async ({ sala, k, nome, codigo, mic, ui }) => {
   addEventListener('pagehide', ctl.sai);
   ui.mostra('progresso');
   ui.passo(1, 'ativo');
-  // Acaba esta tentativa SEM tela de erro e devolve o formulário (falta o código); o app pede o código e chama `entra` de novo.
-  const voltaAoFormulario = () => {
+  // Acaba esta tentativa SEM tela de erro e devolve o formulário (falta o código ou ele veio errado); o app pede o código e chama `entra` de novo.
+  const voltaAoFormulario = (dica = renovado ? MSG.certRenovado : MSG.pedeCodigo) => { // o aviso de renovação não pode se perder quando a 1ª tentativa vem sem código
     fim = true;
     c?.open && c.send({ t: 'sair' });
     mic?.getTracks().forEach(t => t.stop());
     setTimeout(() => peer?.destroy(), FECHA_MS);
-    ui.codigo(renovado ? MSG.certRenovado : MSG.pedeCodigo); // o aviso de renovação não pode se perder quando a 1ª tentativa vem sem código
+    ui.codigo(dica);
   };
   const tenta = () => { // só com allowlist 'sim' E canal aberto E impressão conferida
     if (fim || enviou || !allowOk || !conectado) return;
@@ -65,7 +65,7 @@ export const entra = async ({ sala, k, nome, codigo, mic, ui }) => {
   consultaAllow(k).then(v => {
     if (fim) return;
     if (v === 'sim') { allowOk = true; ui.passo(1, 'feito'); ui.passo(2, 'ativo'); return tenta(); }
-    encerra(v === 'nao' ? MSG.naoAutorizado : MSG.foraDoAr, v === 'nao' ? {} : { tentar });
+    encerra(v === 'nao' ? MSG.naoAutorizado : MSG.foraDoAr, v === 'nao' ? { titulo: TITULO.naoAutorizado } : { titulo: TITULO.foraDoAr, tentar });
   });
 
   const cs = await certDoConvidado(); // persistente só de quem pediu acesso (D11); visitante: só da sessão, nada é gravado
@@ -75,24 +75,25 @@ export const entra = async ({ sala, k, nome, codigo, mic, ui }) => {
   // Queda só do servidor de sinalização não derruba a sala; sem isto o convidado deixaria de receber chamadas de tela.
   // O PeerJS emite `error` (network) ANTES de `disconnected`: depois de conectado, quem encerra é o close do canal (abaixo).
   peer.on('disconnected', () => !fim && !peer.destroyed && peer.reconnect());
-  peer.on('error', e => !fim && !conectado && encerra(e.type === 'peer-unavailable' ? MSG.salaFechada : MSG.erroRede(e.type), { tentar }));
+  peer.on('error', e => !fim && !conectado && encerra(e.type === 'peer-unavailable' ? MSG.salaFechada : MSG.erroRede(e.type), { titulo: e.type === 'peer-unavailable' ? TITULO.salaFechada : TITULO.semConexao, tentar }));
   peer.on('open', () => {
     c = peer.connect(sala, { serialization: 'json' });
     c.on('open', () => {
       if (fim) return;
       // DTLS conectado (o canal abriu). A impressão do certificado dele tem de ser a do link.
-      if (!confere(c.peerConnection.remoteDescription.sdp, k)) return encerra(MSG.impostor);
+      if (!confere(c.peerConnection.remoteDescription.sdp, k)) return encerra(MSG.impostor, { titulo: TITULO.impostor });
       conectado = true;
       ui.passo(2, 'feito');
       tenta();
     });
-    c.on('close', () => { if (!fim) encerra(aceito ? MSG.fim : MSG.caiu); });
+    c.on('close', () => { if (!fim) encerra(aceito ? MSG.fim : MSG.caiu, { titulo: aceito ? TITULO.fim : TITULO.caiu }); });
     c.on('data', d => {
       if (fim) return;
       if (!valida(d, 'anfitriao') || !enviou) { if (++erros >= 3) c.close(); return; }
       switch (d.t) {
-        case 'errado': case 'trancada': case 'cheia': case 'recusado': return encerra(MSG[d.t]);
-        case 'fim': return encerra(MSG.fim);
+        case 'errado': return voltaAoFormulario(MSG.errado); // código errado: o formulário volta com o nome e o aviso (S04 R11)
+        case 'trancada': case 'cheia': case 'recusado': return encerra(MSG[d.t], { titulo: TITULO[d.t] });
+        case 'fim': return encerra(MSG.fim, { titulo: TITULO.fim });
         case 'espera': return;
         case 'pedeCodigo': return pedeCodigo();
         case 'aceito': return aceito || aceita(d);

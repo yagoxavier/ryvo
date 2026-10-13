@@ -21,6 +21,10 @@
   /* Vermelho funcional — sair da chamada e estados de erro. */
   --desligar: #E5484D;
 
+  /* Fundos de botão sólido (S04 R04): marca e vermelho misturados 25% com Night Core; Soft White sobre eles passa de 4,5:1. */
+  --portal-purple-fn: #614AC7;
+  --desligar-fn: #B03B42;
+
   /* Cores de avatar — medidas no mockup proposta-03 (mediana de 6 pixels por avatar); índice = corAvatar(nome) em src/puro.js. */
   --avatar-1: #7C5CFF;
   --avatar-2: #DC46B3;

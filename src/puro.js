@@ -8,7 +8,7 @@ export const ENTRAR_MS = 10000; // quem conecta e não manda nada em ENTRAR_MS �
 const NOME_MAX = 24;
 export const PRESETS = {
   leve: { w: 1280, h: 720, fps: 30, mbps: 2.5, hint: 'motion' },
-  detalhe: { w: 1920, h: 1080, fps: 15, mbps: 6, hint: 'detail' },
+  detalhe: { w: 1920, h: 1080, fps: 30, mbps: 8, hint: 'detail' },
   movimento: { w: 1920, h: 1080, fps: 60, mbps: 10, hint: 'motion' },
 };
 export const MSG = {
@@ -37,6 +37,15 @@ export const MSG = {
   linkTomado: 'Seu link fixo foi tomado por outra aba enquanto a conexão caiu. Quem já está na sala continua; para receber gente nova, feche a outra aba e reabra a sala.',
   aparelhoInvalido: 'Nome do aparelho inválido: use de 1 a 24 caracteres, sem símbolos invisíveis.',
   certRenovado: 'Seu certificado de aparelho venceu e foi renovado. Use "Pedir acesso" para mandar o ID novo ao admin.',
+  linkInvalido: 'Esse link não é de uma sala do RYVO. Cole o link inteiro que você recebeu.',
+  copiaFalhou: 'Não foi possível copiar',
+};
+// Título da tela de erro, por tipo (S04 R11). `padrao` vale para quem não passa título.
+export const TITULO = {
+  padrao: 'Algo deu errado', semPermissao: 'Sem permissão', expirou: 'Certificado vencido', semConexao: 'Sem conexão',
+  naoAutorizado: 'Sala não autorizada', foraDoAr: 'Sem confirmação', salaFechada: 'Sala fechada', impostor: 'Conexão recusada',
+  fim: 'Sala encerrada', caiu: 'Conexão perdida', recusado: 'Entrada recusada', trancada: 'Sala trancada', cheia: 'Sala cheia',
+  linkIncompleto: 'Link incompleto',
 };
 
 // Identidade: cada ponta usa UM certificado DTLS; a impressão digital (sha-256, 64 hex) é o ID.
@@ -213,4 +222,5 @@ export const guardaSala = (lista, k, nome) => (eHex(k) && nomeValido(nome) ? [{ 
 // Texto que o admin recebe pelo WhatsApp. null se nome, aparelho (1 a 24, sem controle/invisível) ou impressão forem inválidos.
 export const textoPedido = (nome, aparelho, fp) => (nomeValido(nome) && nomeValido(aparelho) && eHex(fp)
   ? `RYVO: pedido de acesso\nNome: ${nome}\nAparelho: ${aparelho}\nID: ${fp}` : null);
-export const urlPedido = (admin, texto) => `https://wa.me/${admin}?text=${encodeURIComponent(texto)}`;
+// Sem número: o WhatsApp abre com o texto pronto e a pessoa escolhe o admin nos contatos. Assim nenhum telefone fica público no código.
+export const urlPedido = texto => `https://wa.me/?text=${encodeURIComponent(texto)}`;
